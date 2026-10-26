@@ -1,0 +1,173 @@
+{
+  "schema": 1,
+  "thread_id": "01a1622a-673c-7b01-a707-f263c6ed20a0",
+  "sources": [
+    {
+      "source": "/Users/growing-1/Documents/ChatGPT/sql表/tiktok-transcript-zh",
+      "destination": ".",
+      "files": 38
+    }
+  ],
+  "files": {
+    ".gitignore": {
+      "sha256": "b2e7690864e50e47571a262dc40d02074daf2d48d812293941962360e87f3984",
+      "mode": 420
+    },
+    "LICENSE": {
+      "sha256": "ce1e8f31a7b6a895feec1dc12e70ec3ae317111f17927e50add8690e441189c4",
+      "mode": 420
+    },
+    "MANAGEMENT.md": {
+      "sha256": "755619c0d32cf5757af516771fba2a04a308dcf4ee6cc0186463db67452626b5",
+      "mode": 420
+    },
+    "README.md": {
+      "sha256": "6ca85b2495f02ec333c7743a3a91b4040b899f4c2d9603c797ed5a4e9c6eb72b",
+      "mode": 420
+    },
+    "RESEARCH.md": {
+      "sha256": "4d3807460e9e4e3955a2afbf9949384824927561d57712daff58d99b9b3b6219",
+      "mode": 420
+    },
+    "VALIDATION.md": {
+      "sha256": "870d535c19a7e74eb5aa6228558b7af55c8cbef01614ab1b571fe1248fad8d65",
+      "mode": 420
+    },
+    "design/UI-0.2.md": {
+      "sha256": "931090d2ed1adb63759c4c72638c7f39458496544588baa1e39ebc528c66b3dc",
+      "mode": 420
+    },
+    "extension/background.js": {
+      "sha256": "b19241c84d6e6806648fd9276db5ceb4ea3dcb97d6e108b6a4689319adfad6ac",
+      "mode": 420
+    },
+    "extension/content.js": {
+      "sha256": "7e34ce1f58904fe6f4f6868a9da3e5254877ae96c81eed930c7dd9e49dcbe685",
+      "mode": 420
+    },
+    "extension/generic-content.js": {
+      "sha256": "ae593fa41c8f0c1f4d6b998ffda26c8dd71d2b72acc58a565cdfb30ded5f4c9e",
+      "mode": 420
+    },
+    "extension/lib/core.js": {
+      "sha256": "235f8c00ee792f64b7155430146834db69e173095b1b9ded72ff9e1e3f8efe01",
+      "mode": 420
+    },
+    "extension/manifest.json": {
+      "sha256": "7e55f87afef730ddb8bc912ce91cbf6caf45b7c442367fd5284c91e186b3f1fd",
+      "mode": 420
+    },
+    "extension/offscreen.html": {
+      "sha256": "c55bfb5ff1243de4fef33f59ef5d55015af60fda9e21c678e706a8a885fbae9b",
+      "mode": 420
+    },
+    "extension/offscreen.js": {
+      "sha256": "5fc420aa84a28e8400a2c2cb76a015957eb504a16e516145007cb2d6f7baa64e",
+      "mode": 420
+    },
+    "extension/page-bridge.js": {
+      "sha256": "28878b27c60f400c25b3be19543400adcf3e615d73ec738111b5538ad866bb91",
+      "mode": 420
+    },
+    "extension/panel.css": {
+      "sha256": "8ad307e0843055dae462ec74af7677632e1d726b266ce7e2ff8c5a6a822bec25",
+      "mode": 420
+    },
+    "extension/panel.html": {
+      "sha256": "e3a5bbdc026c5ff6708170b0a3496bffb79d9229648ce1676e301fb2f1194449",
+      "mode": 420
+    },
+    "extension/panel.js": {
+      "sha256": "5317e9872ff72a3ed34423cc73ce4d039b1ebb4ec8d5b9862c2bd9ff657a97dd",
+      "mode": 420
+    },
+    "extension/portable-config.js": {
+      "sha256": "429d601346cf3a1b3e70fae8eaa5f432a0c0816b061b1e0b2a94c8ab86730087",
+      "mode": 420
+    },
+    "extension/setup.css": {
+      "sha256": "c04685065728dafbc1f0644cee387c3de43f9a1e6f208cde73a16eabe1919f9d",
+      "mode": 420
+    },
+    "extension/setup.html": {
+      "sha256": "3be9fae6c383c0b4c5f0fd3fd1f5219a58fea8fbb27d3ddb29bd49bdda4a71ee",
+      "mode": 420
+    },
+    "extension/setup.js": {
+      "sha256": "5272ebcbb59c95dd2586c949a0422f0e227ed60b868213209962ad58c1d174c5",
+      "mode": 420
+    },
+    "package.json": {
+      "sha256": "4b8c4de7bd9fb53b4e835b899b78a01da7a02ea77426961b878200d086417d07",
+      "mode": 420
+    },
+    "scripts/package.py": {
+      "sha256": "84f87e96c7e0390d09b5325d7779f76829ed1c6cd92673d23f79980823809d1b",
+      "mode": 420
+    },
+    "scripts/package_windows.py": {
+      "sha256": "0cb589105ecbc88f9ae2cacc5c805974da010c3a18af5b48487838402db69e11",
+      "mode": 420
+    },
+    "server/requirements.txt": {
+      "sha256": "a0e33d44fb0f6e7b348f475f40b9395baa4f2c9739a6bdba663835169f600c84",
+      "mode": 420
+    },
+    "server/server.py": {
+      "sha256": "21cbfadd85ef97ab69146193b6c4a98c8e3d7f59e78aa48dd972bf9fe81e8536",
+      "mode": 420
+    },
+    "tests/authorization.test.cjs": {
+      "sha256": "d38dffd1025aeb32c8ad456ed580ad61b9a6be37e688817d5d3cf5aed9d044fc",
+      "mode": 420
+    },
+    "tests/check.cjs": {
+      "sha256": "68984a1a8fcd355bd1b1e4a4bfcfd3df08ad52205049150e1483493a03f86f83",
+      "mode": 420
+    },
+    "tests/core.test.cjs": {
+      "sha256": "fa2298f9eb466691dccbe467416080b8658a148754f2b22d968f8b5e767952a1",
+      "mode": 420
+    },
+    "tests/generic.test.cjs": {
+      "sha256": "c0c92a9d0ed4938a6a4d14047fce658c47a27b8f931236308cfae2abda5e439d",
+      "mode": 420
+    },
+    "tests/test_server.py": {
+      "sha256": "71652eb106d48978220d7ecb25114bd7b3b3d7b5403cd6a86052a550e3413882",
+      "mode": 420
+    },
+    "tests/test_windows_launcher.py": {
+      "sha256": "f243ee680c2a430279c71a43244c43e60bbf3181f4e548f392fbbba5d1724ac8",
+      "mode": 420
+    },
+    "windows/launcher.py": {
+      "sha256": "65732abd7577369eb8cc958d46f051b2a5ff55e56911505cffffa37332e8d99a",
+      "mode": 420
+    },
+    "windows/smoke.wav": {
+      "sha256": "13070720a17dd155bc4829a13eb6d0b52992d3ce093399e9278232462323f935",
+      "mode": 420
+    },
+    "windows/一键启动.bat": {
+      "sha256": "110ec6c4d9a73ad75134aacb0732b0abab281a31deff0053f1f05976fddd04b5",
+      "mode": 420
+    },
+    "windows/使用说明.txt": {
+      "sha256": "51f288b62bedae92ce3ea74e641208c346d60ff2f36d1ecce5296fc23aed5760",
+      "mode": 420
+    },
+    "windows/运行诊断.bat": {
+      "sha256": "4e986afeed0b2402dfcbbd0f0d5ae4dd840a4839063ad45baf93e424fc93b744",
+      "mode": 420
+    },
+    "启动本机识别.bat": {
+      "sha256": "f6a12e316379d89cfca549e5ad47dfcce7e2cf8b4315e26d8f45ed19feb70708",
+      "mode": 420
+    },
+    "启动本机识别.command": {
+      "sha256": "2246f9591b045c6f721f603dbee75b081b041ef0afffd140a96b495724eaea8d",
+      "mode": 493
+    }
+  }
+}

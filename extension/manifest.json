@@ -1,0 +1,70 @@
+{
+  "manifest_version": 3,
+  "name": "网页口播中文助手",
+  "version": "0.4.0",
+  "description": "识别已授权网页标签页的音视频口播并翻译为简体中文；TikTok 优先读取字幕，其他网页使用本机 Whisper。",
+  "minimum_chrome_version": "116",
+  "permissions": [
+    "storage",
+    "sidePanel",
+    "tabCapture",
+    "offscreen",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*.tiktok.com/*",
+    "https://*.tiktokcdn.com/*",
+    "https://*.tiktokcdn-us.com/*",
+    "https://*.tiktokv.com/*",
+    "https://*.byteoversea.com/*",
+    "https://*.ibytedtos.com/*",
+    "https://*.muscdn.com/*",
+    "https://translate.googleapis.com/*",
+    "http://127.0.0.1:8765/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "打开中文助手 / 授权当前网页音频"
+  },
+  "side_panel": {
+    "default_path": "panel.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.tiktok.com/*"
+      ],
+      "js": [
+        "lib/core.js",
+        "page-bridge.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://*.tiktok.com/*"
+      ],
+      "js": [
+        "lib/core.js",
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://*.tiktok.com https://*.tiktokcdn.com https://*.tiktokcdn-us.com https://*.tiktokv.com https://*.byteoversea.com https://*.ibytedtos.com https://*.muscdn.com https://translate.googleapis.com http://127.0.0.1:8765"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+Shift+Y",
+        "mac": "Alt+Shift+Y"
+      },
+      "description": "打开助手并授权当前网页标签页音频"
+    }
+  }
+}

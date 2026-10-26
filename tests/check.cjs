@@ -1,0 +1,10 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const {execFileSync} = require('node:child_process');
+const root = path.resolve(__dirname,'..');
+const extension = path.join(root,'extension');
+const manifest = JSON.parse(fs.readFileSync(path.join(extension,'manifest.json'),'utf8'));
+for (const name of [manifest.background.service_worker,manifest.side_panel.default_path,...manifest.content_scripts.flatMap(s=>s.js)]) if(!fs.existsSync(path.join(extension,name))) throw new Error(`Missing ${name}`);
+for (const name of ['background.js','offscreen.js','panel.js','page-bridge.js','content.js','lib/core.js','portable-config.js','setup.js','generic-content.js']) execFileSync(process.execPath,['--check',path.join(extension,name)],{stdio:'inherit'});
+if(manifest.host_permissions.includes('<all_urls>')) throw new Error('Unexpected broad host access');
+console.log('Manifest references and JavaScript syntax: OK');
