@@ -56,13 +56,13 @@ def build():
     shutil.copytree(ROOT / 'windows', OUT / 'windows', ignore=shutil.ignore_patterns('__pycache__', '*.pyc', '*.bat'))
     for name in ('一键启动.bat', '运行诊断.bat'):
         shutil.copy2(ROOT / 'windows' / name, OUT / name)
-    model_cache = Path.home() / '.cache/huggingface/hub/models--Systran--faster-whisper-base'
+    model_cache = Path.home() / '.cache/huggingface/hub/models--Systran--faster-whisper-small'
     revision = (model_cache / 'refs/main').read_text().strip()
-    model = OUT / 'models/faster-whisper-base'
+    model = OUT / 'models/faster-whisper-small'
     model.mkdir(parents=True)
     for name in ('config.json', 'model.bin', 'tokenizer.json', 'vocabulary.txt', 'README.md'):
         shutil.copy2(model_cache / 'snapshots' / revision / name, model / name)
-    # Original OpenAI license also applies to the converted base weights.
+    # Original OpenAI license also applies to the converted small weights.
     shutil.copy2(DOWNLOADS / 'whisper-LICENSE.txt', model / 'LICENSE.txt')
     support = OUT / 'support'
     support.mkdir()
@@ -73,7 +73,7 @@ def build():
     sources = {
         'python': 'https://www.python.org/ftp/python/3.12.10/python-3.12.10-embed-amd64.zip',
         'chrome': json.loads((DOWNLOADS / 'chrome-source.json').read_text()),
-        'model': {'repository': 'https://huggingface.co/Systran/faster-whisper-base', 'revision': revision},
+        'model': {'repository': 'https://huggingface.co/Systran/faster-whisper-small', 'revision': revision},
         'microsoft_runtime': 'https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx',
         'microsoft_repair': 'https://aka.ms/vs/17/release/vc_redist.x64.exe',
         'wheels': {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in wheels},

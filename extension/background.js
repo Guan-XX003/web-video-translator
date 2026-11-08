@@ -1,6 +1,6 @@
-importScripts('lib/core.js');
+importScripts('lib/core.js', 'lib/translation.js');
 importScripts('portable-config.js');
-const DEFAULTS = {auto: true, translate: true, token: '', language: 'auto'};
+const DEFAULTS = {auto: true, translate: true, token: '', language: 'auto', translationProvider: 'google', deepseekKey: '', deepseekURL: 'https://api.deepseek.com/chat/completions', deepseekModel: 'deepseek-flash', glossary: '', auddKey: ''};
 const videos = new Map(), jobs = new Map(), translations = new Map();
 let captureTab = null;
 const ready = (async () => {
@@ -43,7 +43,13 @@ async function translateOne(text) {
   if (translations.size > 1000) translations.delete(translations.keys().next().value);
   return zh;
 }
-async function translateRows(rows, stillCurrent) {
+async function translateRows(rows, stillCurrent, context = []) {
+  const opts = await settings();
+  if (opts.translationProvider === 'deepseek') {
+    const output = await TKTranslation.translate(rows, {key: opts.deepseekKey, model: opts.deepseekModel, url: opts.deepseekURL, glossary: opts.glossary, context, stillCurrent});
+    if (output && stillCurrent()) rows.forEach((row, i) => { row.zh = output[i]; });
+    return rows;
+  }
   let next = 0;
   await Promise.all(Array.from({length: Math.min(3, rows.length)}, async () => {
     while (next < rows.length && stillCurrent()) {
@@ -52,6 +58,22 @@ async function translateRows(rows, stillCurrent) {
     }
   }));
   return rows;
+}
+// Do not let slow network translation block capture or create unbounded requests.
+let activeLiveTranslations = 0;
+const liveTranslationQueue = [];
+function enqueueLiveTranslation(task) {
+  if (liveTranslationQueue.length >= 32) return Promise.reject(new Error('翻译队列已满，请稍后点击重新翻译'));
+  return new Promise((resolve, reject) => {
+    liveTranslationQueue.push({task, resolve, reject});
+    pumpLiveTranslations();
+  });
+}
+function pumpLiveTranslations() {
+  while (activeLiveTranslations < 3 && liveTranslationQueue.length) {
+    const entry = liveTranslationQueue.shift(); activeLiveTranslations++;
+    Promise.resolve().then(entry.task).then(entry.resolve, entry.reject).finally(() => { activeLiveTranslations--; pumpLiveTranslations(); });
+  }
 }
 async function archive(v) {
   if (!v.rows?.length) return;
@@ -80,7 +102,7 @@ async function readCaptions(tabId, key, force = false) {
       } catch (error) { if (isCurrent()) { state.status = `原文已保留；翻译失败：${error.message}`; state.stage = 'error'; await persist(); } }
       return;
     }
-    state.status = captureTab === tabId ? '网页音频已授权，请播放并取消静音（每约 15 秒识别一次）' : '未发现字幕。点击浏览器工具栏中的插件图标，授权音频识别。';
+    state.status = captureTab === tabId ? '网页音频已授权，请播放并取消静音（每约 7 秒识别一次）' : '未发现字幕。点击浏览器工具栏中的插件图标，授权音频识别。';
     state.stage = 'waiting'; await persist(); return;
   }
   state.status = '正在提取视频字幕…'; state.stage = 'loading'; await persist();
@@ -150,7 +172,7 @@ async function startCapture(tab) {
   const state = videos.get(tab.id);
   if (state && state.source !== '字幕') {
     state.stage = opts.token ? 'listening' : 'waiting';
-    state.status = !opts.auto ? '自动跟随已关闭，可在设置中开启' : opts.token ? '音频已授权，正在聆听（每约 15 秒识别一次）' : '音频已授权，请在设置中填写本机服务配对码';
+    state.status = !opts.auto ? '自动跟随已关闭，可在设置中开启' : opts.token ? '音频已授权，正在聆听（每约 7 秒识别一次）' : '音频已授权，请在设置中填写本机服务配对码';
   }
   await persist();
   await chrome.action.setBadgeText({text: 'ON', tabId: tab.id});
@@ -187,8 +209,31 @@ async function handle(message, sender) {
   }
   // Privileged commands originate only in extension pages, never TikTok content scripts.
   if (!sender.url?.startsWith(chrome.runtime.getURL(''))) return;
+  if (message.type === 'MUSIC_RECOGNIZE') {
+    const current = videos.get(message.tabId);
+    if (captureTab !== message.tabId || !current || current.id !== message.videoId) throw new Error('请先在当前视频网页点击插件图标授权音频');
+    const opts = await settings();
+    if (!opts.auddKey) throw new Error('请先在设置中填写并保存 AudD API Token');
+    const result = await offscreen({type: 'MUSIC_RECOGNIZE', tabId: message.tabId, videoId: current.id, token: opts.auddKey});
+    if (!result?.ok) throw new Error(result?.error || '音频识别未启动，请重新授权');
+    if (videos.get(message.tabId)?.id !== current.id) throw new Error('视频已切换，请在当前视频重新识别');
+    return {ok: true, music: result.music};
+  }
+  if (message.type === 'REWRITE') {
+    const opts = await settings();
+    const text = await TKTranslation.rewrite(message.text, {key: opts.deepseekKey, model: opts.deepseekModel, url: opts.deepseekURL, prompt: message.prompt});
+    return {ok: true, text};
+  }
   if (message.type === 'RETRY') {
-    const v = videos.get(message.tabId); if (v) await readCaptions(message.tabId, v.id, true); return {ok: true};
+    const v = videos.get(message.tabId);
+    if (v?.rows?.length && (await settings()).translate) {
+      const original = v.rows; const copy = original.map(r => ({...r, zh: ''}));
+      const stillCurrent = () => videos.get(message.tabId) === v && v.rows === original;
+      v.stage = 'translating'; v.status = '正在按当前设置重新翻译…'; await persist();
+      try { await translateRows(copy, stillCurrent); if (stillCurrent()) { v.rows = copy; v.stage = 'done'; v.status = '重新翻译完成'; await persist(); await archive(v); } }
+      catch (error) { if (stillCurrent()) { v.stage = 'error'; v.status = `原译文已保留；重新翻译失败：${error.message}`; await persist(); } }
+    } else if (v) await readCaptions(message.tabId, v.id, true);
+    return {ok: true};
   }
   if (message.type === 'STOP') {
     const previous = captureTab; await offscreen({type: 'STOP'}); captureTab = null;
@@ -217,17 +262,25 @@ async function handle(message, sender) {
     if (message.language) v.captionLanguage = message.language;
     const rows = TKCore.mergeSentences(message.rows || []).filter(r => !v.duration || r.start < v.duration).map(r => ({...r, end: v.duration ? Math.min(r.end, v.duration) : r.end})), opts = await settings();
     const stillCurrent = () => videos.get(message.tabId)?.id === v.id && videos.get(message.tabId)?.source !== '字幕';
-    let translationError = '';
-    if (opts.translate) { try { await translateRows(rows, stillCurrent); } catch (error) { translationError = error.message; } }
     if (!stillCurrent()) return;
-    const merged = [...v.rows];
-    for (const row of rows) if (!merged.some(r => Math.abs(r.start - row.start) < 1.5 && r.text === row.text)) merged.push(row);
-    v.rows = merged.sort((a, b) => a.start - b.start).slice(-1500); v.source = '本机语音';
-    v.stage = translationError ? 'error' : 'listening';
-    v.status = translationError ? `原文已保留；翻译失败：${translationError}` : rows.length ? '已识别播放片段，继续聆听中…' : '此片段未识别到人声，继续聆听中…';
-    await persist(); await archive(v); return;
+    const added = rows.filter(row => !v.rows.some(r => Math.abs(r.start - row.start) < 1.5 && r.text === row.text));
+    const context = v.rows.slice(-3);
+    v.rows = [...v.rows, ...added].sort((a, b) => a.start - b.start).slice(-1500); v.source = '本机语音';
+    v.stage = 'listening'; v.status = opts.translate && added.length ? '原文已识别，正在翻译…' : '已识别播放片段，继续聆听中…';
+    await persist(); await archive(v);
+    if (opts.translate && added.length) {
+      const pending = added.map(row => ({...row}));
+      try {
+        await enqueueLiveTranslation(() => stillCurrent() ? translateRows(pending, stillCurrent, context) : undefined);
+        if (!stillCurrent()) return;
+        for (let i = 0; i < added.length; i++) if (v.rows.includes(added[i]) && !added[i].zh) added[i].zh = pending[i].zh;
+        v.stage = 'listening'; v.status = '已识别播放片段，继续聆听中…';
+      } catch (error) { if (!stillCurrent()) return; v.stage = 'error'; v.status = `原文已保留；翻译失败：${error.message}`; }
+      await persist(); await archive(v);
+    }
+    return;
   }
-  if (message.type === 'CLEAR') { await offscreen({type: 'RESET'}); videos.clear(); jobs.clear(); await chrome.storage.local.remove('history'); await persist(); return {ok: true}; }
+  if (message.type === 'CLEAR') { await offscreen({type: 'RESET'}); videos.clear(); jobs.clear(); await chrome.storage.local.remove(['history', 'rewrites']); await persist(); return {ok: true}; }
 }
 chrome.runtime.onMessage.addListener((message, sender, respond) => {
   if (message.target === 'offscreen') return false;

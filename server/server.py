@@ -194,7 +194,7 @@ def make_handler(token, transcriber):
 def main():
     parser = argparse.ArgumentParser(description='TikTok 口播中文助手 · 本机离线识别服务')
     parser.add_argument('--port', type=int, default=8765)
-    parser.add_argument('--model', choices=sorted(MODEL_IDS), default=os.environ.get('TK_WHISPER_MODEL', 'base'))
+    parser.add_argument('--model', choices=sorted(MODEL_IDS), default=os.environ.get('TK_WHISPER_MODEL', 'small'))
     parser.add_argument('--download-root', default=None)
     parser.add_argument('--model-path', type=Path, help='读取便携包内的模型目录')
     parser.add_argument('--offline', action='store_true', help='只读取已缓存的模型，禁止模型下载')

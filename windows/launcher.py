@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = Path(os.environ.get('LOCALAPPDATA', Path.home())) / 'TikTokTranscriptZh'
-MODEL = ROOT / 'models' / 'faster-whisper-base'
+MODEL = ROOT / 'models' / 'faster-whisper-small'
 DLL_HANDLES = []
 
 
@@ -36,8 +36,8 @@ def prepare_environment():
 
 def required_files():
     for relative in ('runtime/python.exe', 'browser/chrome-win64/chrome.exe', 'extension/manifest.json',
-                     'server/server.py', 'models/faster-whisper-base/model.bin',
-                     'models/faster-whisper-base/config.json', 'models/faster-whisper-base/tokenizer.json'):
+                     'server/server.py', 'models/faster-whisper-small/model.bin',
+                     'models/faster-whisper-small/config.json', 'models/faster-whisper-small/tokenizer.json'):
         if not (ROOT / relative).is_file():
             raise RuntimeError(f'文件不完整：{relative}。请先完整解压 ZIP，再运行一键启动.bat。')
 
@@ -91,7 +91,7 @@ def diagnose():
     print('faster-whisper:', faster_whisper.__version__)
     print('CTranslate2:', ctranslate2.__version__, 'ONNX Runtime:', onnxruntime.__version__)
     from server import Transcriber
-    transcriber = Transcriber('base', offline=True, model_path=MODEL)
+    transcriber = Transcriber('small', offline=True, model_path=MODEL)
     transcriber.load()
     sample = ROOT / 'windows' / 'smoke.wav'
     result = transcriber.transcribe(sample.read_bytes(), 'en')
@@ -108,7 +108,7 @@ def main():
     args = parser.parse_args()
     if sys.platform != 'win32' or ctypes.sizeof(ctypes.c_void_p) != 8:
         raise RuntimeError('此便携包用于 Windows 10/11 的 Intel / AMD 64 位电脑。')
-    ctypes.windll.kernel32.SetConsoleTitleW('网页口播中文助手 - 本机模型服务（请保留此窗口）')
+    ctypes.windll.kernel32.SetConsoleTitleW('translation tik - 本机模型服务（请保留此窗口）')
     prepare_environment()
     if args.diagnose:
         diagnose()
@@ -119,6 +119,8 @@ def main():
     token = load_token()
     state = health(token)
     if state and state.get('ok'):
+        if state.get('model') != 'small':
+            raise RuntimeError('检测到旧版识别服务，请先关闭旧版本的服务窗口和专用浏览器，再启动新版。')
         if not state.get('loaded'):
             raise RuntimeError('本机服务正在加载模型，请等待原窗口显示模型就绪后再双击。')
         target = DATA / 'extension'
@@ -127,13 +129,13 @@ def main():
         open_browser(target)
         print('本机服务已在运行，已重新打开专用浏览器。')
         return
-    transcriber = Transcriber('base', offline=True, model_path=MODEL)
+    transcriber = Transcriber('small', offline=True, model_path=MODEL)
     try:
         server = ThreadingHTTPServer(('127.0.0.1', 8765), make_handler(token, transcriber))
     except OSError as error:
         raise RuntimeError('无法使用本机 8765 端口。请确认没有其他识别服务正在启动。') from error
     server.daemon_threads = True
-    print('正在加载包内 Whisper base 多语言模型，无需下载。', flush=True)
+    print('正在加载包内 Whisper small 多语言模型，无需下载。', flush=True)
     try:
         transcriber.load()
         # Check packaged VAD and audio libraries before calling the service ready.

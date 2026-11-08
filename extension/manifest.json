@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "网页口播中文助手",
-  "version": "0.4.0",
+  "name": "translation tik",
+  "version": "0.8.0",
   "description": "识别已授权网页标签页的音视频口播并翻译为简体中文；TikTok 优先读取字幕，其他网页使用本机 Whisper。",
   "minimum_chrome_version": "116",
   "permissions": [
@@ -21,13 +21,22 @@
     "https://*.ibytedtos.com/*",
     "https://*.muscdn.com/*",
     "https://translate.googleapis.com/*",
+    "https://api.deepseek.com/*",
     "http://127.0.0.1:8765/*"
+  ],
+  "optional_host_permissions": [
+    "https://*/*"
   ],
   "background": {
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "打开中文助手 / 授权当前网页音频"
+    "default_title": "translation tik · 打开助手 / 授权网页音频",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    }
   },
   "side_panel": {
     "default_path": "panel.html"
@@ -56,7 +65,7 @@
     }
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://*.tiktok.com https://*.tiktokcdn.com https://*.tiktokcdn-us.com https://*.tiktokv.com https://*.byteoversea.com https://*.ibytedtos.com https://*.muscdn.com https://translate.googleapis.com http://127.0.0.1:8765"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https: http://127.0.0.1:8765"
   },
   "commands": {
     "_execute_action": {
@@ -66,5 +75,11 @@
       },
       "description": "打开助手并授权当前网页标签页音频"
     }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   }
 }
