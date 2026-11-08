@@ -1,0 +1,4 @@
+interface:
+  display_name: "口播翻译插件配置引导"
+  short_description: "引导加载浏览器插件、启动本机识别、完成配对并选择翻译改写等可选功能"
+  default_prompt: "请用 $web-video-translator-setup 检查我的环境，并带我完成首次配置和最小用例验证。"

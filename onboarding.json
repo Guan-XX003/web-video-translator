@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "repository": "web-video-translator",
+  "setup_skill": "web-video-translator-setup",
+  "skills": [
+    {
+      "name": "web-video-translator-setup",
+      "path": "setup-skills/web-video-translator-setup"
+    }
+  ]
+}

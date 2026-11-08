@@ -20,7 +20,7 @@
       "mode": 420
     },
     "README.md": {
-      "sha256": "21077e5785e7f1ee66de33a3920dcf0718f2bcd30e57e3083174586a83ed132d",
+      "sha256": "8ef0231a5c6ade28c83edc2d5d6f46609a899a7071e67f47760e4d660b62b5b3",
       "mode": 420
     },
     "RESEARCH.md": {
@@ -119,9 +119,17 @@
       "sha256": "5272ebcbb59c95dd2586c949a0422f0e227ed60b868213209962ad58c1d174c5",
       "mode": 420
     },
+    "onboarding.json": {
+      "sha256": "69959da0dfa84ac5d8e0dd71a269f769e2261313586ec3a1af8439b0d79de251",
+      "mode": 420
+    },
     "package.json": {
       "sha256": "97cbbcd79c957489c83a246aed693096df2ccda6d4408edaef13458b27a53c61",
       "mode": 420
+    },
+    "scripts/install_skills.py": {
+      "sha256": "2cc653ac736e90b7bf24228cbbc329b7d035bdc8c477d5068403c2c22301b0f4",
+      "mode": 493
     },
     "scripts/package.py": {
       "sha256": "b30c94789dd52010d9cec88c01829d86e00b94f84561972bf8f624259adc6238",
@@ -137,6 +145,14 @@
     },
     "server/server.py": {
       "sha256": "f915fb1fbeeac83810bdd7bfade6c1c6504662422677488c152914546c51873a",
+      "mode": 420
+    },
+    "setup-skills/web-video-translator-setup/SKILL.md": {
+      "sha256": "13703f7293e9bcf2ba57961bfa5005620e1557b49a942f6565753df1c9961a32",
+      "mode": 420
+    },
+    "setup-skills/web-video-translator-setup/agents/openai.yaml": {
+      "sha256": "51e2c903534d6dc5cd6b07e19d80dfd3eee8f8e66a1a0f7f1329b8e2b49bb52f",
       "mode": 420
     },
     "tests/authorization.test.cjs": {
